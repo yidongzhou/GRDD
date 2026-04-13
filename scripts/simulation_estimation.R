@@ -10,6 +10,15 @@
 # Usage (from repository root):  Rscript scripts/simulation_estimation.R
 
 source(file.path("R", "paths.R"))
+source(grdd_path("R", "kerFctn.R"))
+source(grdd_path("R", "local_linear.R"))
+source(grdd_path("R", "lfr_com.R"))
+source(grdd_path("R", "lfr_fun.R"))
+source(grdd_path("R", "lfr_mea.R"))
+source(grdd_path("R", "lfr_net.R"))
+source(grdd_path("R", "lfr_spd.R"))
+source(grdd_path("R", "lfr_euc.R"))
+source(grdd_path("R", "lcm.R"))
 source(grdd_path("R", "grdd.R"))
 
 library(truncnorm)

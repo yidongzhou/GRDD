@@ -1,7 +1,8 @@
 # Supplement: Taipei air quality (Chen & Whalley AEJ applied paper data).
 # Functional GRDD on smoothed hourly CO curves around a policy date (RDD cutoff).
 #
-# Inputs:  data/all_full_report_stations_94_07_hourly.dta (bundled; ~200 MB).
+# Inputs:  data/all_full_report_stations_94_07_hourly.dta (~200 MB; not in git — download from
+#          https://doi.org/10.3886/E114778V1 , path data_programs/data/taipei/ in the archive).
 # Outputs: output/rdata/taipei_metro.RData with fitted objects and plotly figures for supplement plots.
 # Runtime: long (smoothing + GRDD + inference + local fits + 3D plotly).
 #
@@ -10,10 +11,17 @@
 # Usage (from repository root):  Rscript scripts/supplement_taipei_metro.R
 
 source(file.path("R", "paths.R"))
+source(grdd_path("R", "kerFctn.R"))
+source(grdd_path("R", "local_linear.R"))
+source(grdd_path("R", "lfr_com.R"))
+source(grdd_path("R", "lfr_fun.R"))
+source(grdd_path("R", "lfr_mea.R"))
+source(grdd_path("R", "lfr_net.R"))
+source(grdd_path("R", "lfr_spd.R"))
+source(grdd_path("R", "lfr_euc.R"))
+source(grdd_path("R", "lcm.R"))
 source(grdd_path("R", "grdd.R"))
 source(grdd_path("R", "grdd_inference.R"))
-source(grdd_path("R", "lfr_fun.R"))
-source(grdd_path("R", "kerFctn.R"))
 
 library(haven)
 library(ggplot2)
@@ -26,7 +34,12 @@ library(fdapace)
 
 dta_path <- grdd_path("data", "all_full_report_stations_94_07_hourly.dta")
 if (!file.exists(dta_path)) {
-  stop("Missing ", dta_path, " — required for Taipei supplement.", call. = FALSE)
+  stop(
+    "Missing ", dta_path, ".\n",
+    "Download Chen & Whalley replication from https://doi.org/10.3886/E114778V1 ",
+    "and copy data_programs/data/taipei/all_full_report_stations_94_07_hourly.dta to data/.",
+    call. = FALSE
+  )
 }
 
 taipei <- read_dta(dta_path)

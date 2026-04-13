@@ -12,6 +12,9 @@
 #'   See the \strong{Details} section below.
 #'
 #' @details
+#' Dependencies (\code{kerFctn}, \code{local_linear}, \code{lfr_*}, \code{lcm}) must be
+#' \code{source()}'d before this file (see analysis scripts under \code{scripts/}).
+#'
 #' Available options in \code{optns} include:
 #' \describe{
 #'   \item{\code{type}}{Type of random object. Supported types include: 
@@ -37,20 +40,6 @@
 #' @return
 #' An object of class \code{"grdd"}, which is a list containing local average treatment 
 #' effect estimates on the metric space.
-
-# Source required functions (run R from the GRDD repository root, or set GRDD_ROOT).
-grdd_repo_root <- Sys.getenv("GRDD_ROOT", "")
-if (!nzchar(grdd_repo_root)) grdd_repo_root <- getwd()
-source(file.path(grdd_repo_root, "R", "paths.R"))
-source(grdd_path("R", "kerFctn.R"))
-source(grdd_path("R", "local_linear.R"))
-source(grdd_path("R", "lfr_com.R"))
-source(grdd_path("R", "lfr_fun.R"))
-source(grdd_path("R", "lfr_mea.R"))
-source(grdd_path("R", "lfr_net.R"))
-source(grdd_path("R", "lfr_spd.R"))
-source(grdd_path("R", "lfr_euc.R"))
-source(grdd_path("R", "lcm.R"))
 
 grdd <- function(y, x, cutoff = 0, optns = list()) {
   # Input validation
@@ -391,4 +380,30 @@ harmonize_measure <- function(y) {
       sort(rep(y[[i]], each = M %/% N[i]))
     }
   })
+}
+
+print.grdd <- function(x, digits = 4, ...) {
+  optns <- x$optns
+  type <- optns$type
+  n <- length(x$x)
+  n_left <- sum(x$x < x$cutoff)
+  n_right <- sum(x$x >= x$cutoff)
+  bw <- optns$bw
+  if (length(bw) > 1L) {
+    bw <- bw[1L]
+  }
+  cat("GRDD fit (geodesic regression discontinuity)\n")
+  cat("  type: ", type, "\n", sep = "")
+  cat("  cutoff: ", format(x$cutoff, digits = digits), "\n", sep = "")
+  cat("  n = ", n, ", n_left = ", n_left, ", n_right = ", n_right,
+      ", h = ", format(bw, digits = digits), "\n", sep = "")
+  d_hat <- tryCatch(
+    distance(x$tau$left, x$tau$right, optns),
+    error = function(e) NA_real_
+  )
+  if (is.finite(d_hat)) {
+    cat("  geodesic distance d_hat = |tau_right - tau_left|: ",
+        format(d_hat, digits = digits), "\n", sep = "")
+  }
+  invisible(x)
 }

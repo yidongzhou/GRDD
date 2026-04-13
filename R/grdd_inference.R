@@ -1,7 +1,7 @@
 # =============================================================================
 # Bootstrap inference for GRDD (Hilbert embedding, extrinsic inference)
 # =============================================================================
-# Source R/grdd.R first so kerFctn, lfr, and distance are available.
+# Source R/grdd.R after kerFctn, local_linear, lfr_*, lcm (see scripts/*.R).
 #
 # Pass the object returned by grdd() as \code{fit}. Estimation settings
 # (type, bw, kernel, supp, lower, upper, ...) are taken from \code{fit$optns};

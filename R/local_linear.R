@@ -1,5 +1,5 @@
 # Local linear regression weights (product kernel).
-# Source after kerFctn.R (from grdd.R). Used by lfr_*0 and grdd_inference.
+# Source after kerFctn.R (see scripts that source R/*.R in order). Used by lfr_* and grdd_inference.
 
 #' Local linear weights at one evaluation point
 #'

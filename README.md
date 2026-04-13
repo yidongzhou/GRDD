@@ -15,7 +15,7 @@ GRDD/
 ├── figure4.R                 # Figure 4 — Taipei 3D surfaces (HTML)
 ├── R/                        # GRDD implementation and local Fréchet helpers
 │   ├── paths.R               # Project root (GRDD_ROOT or getwd())
-│   ├── grdd.R
+│   ├── grdd.R                # grdd(), print.grdd, lfr, bw_select, distance, gtm
 │   ├── grdd_inference.R
 │   └── …                     # lfr_*.R, kerFctn.R, local_linear.R, lcm.R
 ├── scripts/
@@ -23,9 +23,9 @@ GRDD/
 │   ├── simulation_inference.R     # Long-run: size/power MC → output/rdata/inference.RData
 │   ├── application_uk_election.R  # UK analysis; loads uk.RData to skip grdd() when cached
 │   └── supplement_taipei_metro.R # Taipei smoothing + GRDD + surfaces → output/rdata/taipei_metro.RData
-├── data/                     # Raw inputs (CSVs, .dta)
+├── data/                     # Raw inputs (CSVs); Taipei .dta not in git (see Data sources)
 │   ├── incumbency_advantage_*.csv
-│   └── all_full_report_stations_94_07_hourly.dta  # Large; required for Taipei supplement
+│   └── all_full_report_stations_94_07_hourly.dta  # obtain separately (ICPSR; >100 MB)
 └── output/
     ├── figures/              # Generated PDFs and HTML
     └── rdata/                # estimation.RData, inference.RData, uk.RData, taipei_metro.RData
@@ -91,7 +91,9 @@ Replication inputs follow the original public releases; place files in `data/` a
 
 - **United Kingdom (Figure 2).** Constituency-level vote shares and incumbency-advantage measures from Eggers & Spirling (2017): *Incumbency Effects and the Strength of Party Preferences: Evidence from Multiparty Elections in the United Kingdom*, *The Journal of Politics* 79, 903–920. CSV filenames match their replication materials.
 
-- **Taipei air quality (Figures 3–4).** Hourly station CO (`all_full_report_stations_94_07_hourly.dta`, large file) from Chen & Whalley (2012): *Green Infrastructure: The Effects of Urban Rail Transit on Air Quality*, *American Economic Journal: Economic Policy* 4, 58–97. Data are used here for the supplementary functional-data illustration.
+- **Taipei air quality (Figures 3–4).** Hourly station CO from Chen & Whalley (2012): *Green Infrastructure: The Effects of Urban Rail Transit on Air Quality*, *American Economic Journal: Economic Policy* 4, 58–97. The file is **not** stored in this repository (GitHub file-size limit). Download the replication materials from ICPSR: [https://doi.org/10.3886/E114778V1](https://doi.org/10.3886/E114778V1). Inside the archive, copy  
+  `data_programs/data/taipei/all_full_report_stations_94_07_hourly.dta`  
+  to **`data/all_full_report_stations_94_07_hourly.dta`** in this repo before running `scripts/supplement_taipei_metro.R` or `figure3.R` / `figure4.R`.
 
 ## Citation
 
