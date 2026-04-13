@@ -47,5 +47,8 @@ po/*~
 
 .DS_Store
 
+# Taipei hourly CO (exceeds GitHub 100 MB limit; download from ICPSR, see README)
+data/all_full_report_stations_94_07_hourly.dta
+
 # RStudio Connect folder
 rsconnect/
