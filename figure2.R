@@ -6,10 +6,9 @@
 #
 # Usage (from repository root):  Rscript figure2.R
 
-source(file.path("R", "paths.R"))
 library(ggplot2)
 
-source(grdd_path("scripts", "application_uk_election.R"))
+source(file.path("scripts", "application_uk_election.R"))
 
 p <- ggplot() +
   geom_line(
@@ -28,4 +27,4 @@ p <- ggplot() +
   theme_minimal() +
   theme(text = element_text(size = 15), legend.position = "none")
 
-ggsave(grdd_path("output", "figures", "figure2_uk_election.pdf"), p, width = 10, height = 5)
+ggsave(file.path("output", "figures", "figure2_uk_election.pdf"), p, width = 10, height = 5)

@@ -1,6 +1,6 @@
 # Geodesic Regression Discontinuity Design (GRDD) — Replication Materials
 
-Replication code for **Kurisu, Zhou, Otsu, and Müller (2025)**: simulations, bootstrap inference, a UK compositional election application, and a supplementary Taipei air-quality analysis. All scripts assume the working directory is this repository folder (`GRDD/`) unless `GRDD_ROOT` is set.
+Replication code for **Kurisu, Zhou, Otsu, and Müller (2025)**: simulations, bootstrap inference, a UK compositional election application, and a supplementary Taipei air-quality analysis. All scripts assume the working directory is this repository folder (`GRDD/`); use `setwd()` in R (or `cd` in the shell) before running them.
 
 ## Repository structure
 
@@ -14,7 +14,6 @@ GRDD/
 ├── figure3.R                 # Figure 3 — Taipei hourly CO (lines)
 ├── figure4.R                 # Figure 4 — Taipei 3D surfaces (HTML)
 ├── R/                        # GRDD implementation and local Fréchet helpers
-│   ├── paths.R               # Project root (GRDD_ROOT or getwd())
 │   ├── grdd.R                # grdd(), print.grdd, lfr, bw_select, distance, gtm
 │   ├── grdd_inference.R
 │   └── …                     # lfr_*.R, kerFctn.R, local_linear.R, lcm.R
@@ -72,18 +71,9 @@ sessionInfo()
 
 ## Runtime expectations
 
-- **Figure 1**: seconds (loads precomputed `output/rdata/estimation.RData` and `inference.RData`).
-- **Figure 2**: with `uk.RData` present, skips the slow `grdd()` fit; inference, `rdrobust`, and local fits still run.
-- **Figures 3–4**: long on first run (smoothing, functional GRDD, bootstrap, plotly); faster once `taipei_metro.RData` exists.
 - **`simulation_estimation.R` / `simulation_inference.R`**: many hours (Monte Carlo × bootstrap; parallelization helps).
 
-## Environment variables (optional)
-
-| Variable | Effect |
-|----------|--------|
-| `GRDD_ROOT` | Absolute path to this repo if you cannot `setwd()` to `GRDD/` |
-| `GRDD_FORCE_REFIT_UK` | Set to `1` to ignore cached objects in `output/rdata/uk.RData` and re-fit UK GRDD (when sourcing `application_uk_election.R`) |
-| `GRDD_FORCE_REFIT_TAIPEI` | Set to `1` to rebuild `output/rdata/taipei_metro.RData` when running `figure3.R` / `figure4.R` |
+To re-run a cached step from scratch, delete the corresponding file under `output/rdata/` (for example `uk.RData` or `taipei_metro.RData`) and run the script again.
 
 ## Data sources
 

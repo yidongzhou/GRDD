@@ -9,10 +9,9 @@
 #
 # Usage (from repository root):  Rscript figure1.R
 
-source(file.path("R", "paths.R"))
 library(ggplot2)
 
-load(grdd_path("output", "rdata", "estimation.RData"))
+load(file.path("output", "rdata", "estimation.RData"))
 sample_sizes <- as.integer(gsub("^n=", "", names(results)))
 n_reps <- length(results[[1L]])
 
@@ -27,14 +26,14 @@ p_sim <- ggplot(plot_data, aes(x = factor(n), y = bias, fill = factor(n))) +
   theme(text = element_text(size = 20)) +
   guides(fill = "none")
 
-ggsave(grdd_path("output", "figures", "figure1a_simulation_estimation.pdf"), p_sim, width = 8, height = 6)
+ggsave(file.path("output", "figures", "figure1a_simulation_estimation.pdf"), p_sim, width = 8, height = 6)
 
 ab <- sapply(results, mean)
 fitn <- lm(log(ab) ~ log(sample_sizes))
 cat("\n--- simulation_estimation: lm(log(mean bias) ~ log(n)) ---\n")
 print(summary(fitn))
 
-load(grdd_path("output", "rdata", "inference.RData"))
+load(file.path("output", "rdata", "inference.RData"))
 alpha <- 0.05
 B_boot <- 1000L
 n_reps <- dim(reject_array)[3L]
@@ -65,4 +64,4 @@ p_test <- ggplot(plot_data, aes(x = delta, y = prop_reject, color = n, linetype 
   theme_minimal() +
   theme(text = element_text(size = 20), legend.position = "top")
 
-ggsave(grdd_path("output", "figures", "figure1b_simulation_inference.pdf"), p_test, width = 8, height = 6)
+ggsave(file.path("output", "figures", "figure1b_simulation_inference.pdf"), p_test, width = 8, height = 6)

@@ -6,13 +6,12 @@
 # Usage (from repository root):  Rscript figure3.R
 # Heavy step: run scripts/supplement_taipei_metro.R first if .RData is absent.
 
-source(file.path("R", "paths.R"))
 library(ggplot2)
 
-rda <- grdd_path("output", "rdata", "taipei_metro.RData")
-if (!file.exists(rda) || Sys.getenv("GRDD_FORCE_REFIT_TAIPEI", "") == "1") {
+rda <- file.path("output", "rdata", "taipei_metro.RData")
+if (!file.exists(rda)) {
   message("Running supplement_taipei_metro.R …")
-  source(grdd_path("scripts", "supplement_taipei_metro.R"))
+  source(file.path("scripts", "supplement_taipei_metro.R"))
 }
 load(rda, envir = .GlobalEnv)
 
@@ -41,4 +40,4 @@ p <- ggplot(
   scale_x_continuous(breaks = seq(0, 24, 4)) +
   theme(text = element_text(size = 15), legend.position = "top")
 
-ggsave(grdd_path("output", "figures", "figure3_taipei_metro.pdf"), p, width = 10, height = 5)
+ggsave(file.path("output", "figures", "figure3_taipei_metro.pdf"), p, width = 10, height = 5)

@@ -9,18 +9,17 @@
 #
 # Usage (from repository root):  Rscript scripts/simulation_inference.R
 
-source(file.path("R", "paths.R"))
-source(grdd_path("R", "kerFctn.R"))
-source(grdd_path("R", "local_linear.R"))
-source(grdd_path("R", "lfr_com.R"))
-source(grdd_path("R", "lfr_fun.R"))
-source(grdd_path("R", "lfr_mea.R"))
-source(grdd_path("R", "lfr_net.R"))
-source(grdd_path("R", "lfr_spd.R"))
-source(grdd_path("R", "lfr_euc.R"))
-source(grdd_path("R", "lcm.R"))
-source(grdd_path("R", "grdd.R"))
-source(grdd_path("R", "grdd_inference.R"))
+source(file.path("R", "kerFctn.R"))
+source(file.path("R", "local_linear.R"))
+source(file.path("R", "lfr_com.R"))
+source(file.path("R", "lfr_fun.R"))
+source(file.path("R", "lfr_mea.R"))
+source(file.path("R", "lfr_net.R"))
+source(file.path("R", "lfr_spd.R"))
+source(file.path("R", "lfr_euc.R"))
+source(file.path("R", "lcm.R"))
+source(file.path("R", "grdd.R"))
+source(file.path("R", "grdd_inference.R"))
 
 library(truncnorm)
 library(foreach)
@@ -155,6 +154,6 @@ for (in_idx in seq_along(sample_sizes)) {
   }
 }
 
-out <- grdd_path("output", "rdata", "inference.RData")
+out <- file.path("output", "rdata", "inference.RData")
 save(reject_array, file = out)
 message("Saved: ", out)

@@ -5,14 +5,12 @@
 #
 # Usage (from repository root):  Rscript figure4.R
 
-source(file.path("R", "paths.R"))
-
-rda <- grdd_path("output", "rdata", "taipei_metro.RData")
-if (!file.exists(rda) || Sys.getenv("GRDD_FORCE_REFIT_TAIPEI", "") == "1") {
+rda <- file.path("output", "rdata", "taipei_metro.RData")
+if (!file.exists(rda)) {
   message("Running supplement_taipei_metro.R …")
-  source(grdd_path("scripts", "supplement_taipei_metro.R"))
+  source(file.path("scripts", "supplement_taipei_metro.R"))
 }
 load(rda, envir = .GlobalEnv)
 
-htmlwidgets::saveWidget(p_near, grdd_path("output", "figures", "co_surface_near_highway.html"))
-htmlwidgets::saveWidget(p_far, grdd_path("output", "figures", "co_surface_far_highway.html"))
+htmlwidgets::saveWidget(p_near, file.path("output", "figures", "co_surface_near_highway.html"))
+htmlwidgets::saveWidget(p_far, file.path("output", "figures", "co_surface_far_highway.html"))

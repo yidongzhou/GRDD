@@ -10,18 +10,17 @@
 #
 # Usage (from repository root):  Rscript scripts/supplement_taipei_metro.R
 
-source(file.path("R", "paths.R"))
-source(grdd_path("R", "kerFctn.R"))
-source(grdd_path("R", "local_linear.R"))
-source(grdd_path("R", "lfr_com.R"))
-source(grdd_path("R", "lfr_fun.R"))
-source(grdd_path("R", "lfr_mea.R"))
-source(grdd_path("R", "lfr_net.R"))
-source(grdd_path("R", "lfr_spd.R"))
-source(grdd_path("R", "lfr_euc.R"))
-source(grdd_path("R", "lcm.R"))
-source(grdd_path("R", "grdd.R"))
-source(grdd_path("R", "grdd_inference.R"))
+source(file.path("R", "kerFctn.R"))
+source(file.path("R", "local_linear.R"))
+source(file.path("R", "lfr_com.R"))
+source(file.path("R", "lfr_fun.R"))
+source(file.path("R", "lfr_mea.R"))
+source(file.path("R", "lfr_net.R"))
+source(file.path("R", "lfr_spd.R"))
+source(file.path("R", "lfr_euc.R"))
+source(file.path("R", "lcm.R"))
+source(file.path("R", "grdd.R"))
+source(file.path("R", "grdd_inference.R"))
 
 library(haven)
 library(ggplot2)
@@ -32,7 +31,7 @@ library(plotly)
 library(lubridate)
 library(fdapace)
 
-dta_path <- grdd_path("data", "all_full_report_stations_94_07_hourly.dta")
+dta_path <- file.path("data", "all_full_report_stations_94_07_hourly.dta")
 if (!file.exists(dta_path)) {
   stop(
     "Missing ", dta_path, ".\n",
@@ -265,7 +264,7 @@ p_far <- plot_ly() %>%
     title = list(text = "CO Concentration Surface for Far from Highway Stations", y = 0.95)
   )
 
-out_rda <- grdd_path("output", "rdata", "taipei_metro.RData")
+out_rda <- file.path("output", "rdata", "taipei_metro.RData")
 save(
   resmt_highway,
   resmt_nonhighway,

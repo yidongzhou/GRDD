@@ -3,22 +3,21 @@
 #
 # Inputs:  data/incumbency_advantage_* CSV files (Eggers & Spirling replication).
 # Outputs: Printed tables; writes output/rdata/uk.RData with resuk, resuk0, resuk1, avg_points
-#          (for fast figure2.R). If that file exists, resuk is loaded unless GRDD_FORCE_REFIT_UK=1.
+#          (for fast figure2.R). If that file exists, resuk is loaded from disk.
 #
 # Usage (from repository root):  source("scripts/application_uk_election.R")
 
-source(file.path("R", "paths.R"))
-source(grdd_path("R", "kerFctn.R"))
-source(grdd_path("R", "local_linear.R"))
-source(grdd_path("R", "lfr_com.R"))
-source(grdd_path("R", "lfr_fun.R"))
-source(grdd_path("R", "lfr_mea.R"))
-source(grdd_path("R", "lfr_net.R"))
-source(grdd_path("R", "lfr_spd.R"))
-source(grdd_path("R", "lfr_euc.R"))
-source(grdd_path("R", "lcm.R"))
-source(grdd_path("R", "grdd.R"))
-source(grdd_path("R", "grdd_inference.R"))
+source(file.path("R", "kerFctn.R"))
+source(file.path("R", "local_linear.R"))
+source(file.path("R", "lfr_com.R"))
+source(file.path("R", "lfr_fun.R"))
+source(file.path("R", "lfr_mea.R"))
+source(file.path("R", "lfr_net.R"))
+source(file.path("R", "lfr_spd.R"))
+source(file.path("R", "lfr_euc.R"))
+source(file.path("R", "lcm.R"))
+source(file.path("R", "grdd.R"))
+source(file.path("R", "grdd_inference.R"))
 
 library(dplyr)
 library(readr)
@@ -27,7 +26,7 @@ library(ggplot2)
 library(rdrobust)
 library(tidyr)
 
-data_dir <- grdd_path("data")
+data_dir <- file.path("data")
 con_df <- read.csv(file.path(data_dir, "incumbency_advantage_con_based_all_20150122_including_unionists.csv"))
 lab_df <- read.csv(file.path(data_dir, "incumbency_advantage_lab_based_all_20150122.csv"))
 lib_df <- read.csv(file.path(data_dir, "incumbency_advantage_lib_based_all_20150122.csv"))
@@ -81,14 +80,13 @@ if (any(bad_comp)) {
   warning("Some compositions do not sum to 1; check data merge.")
 }
 
-uk_rda <- grdd_path("output", "rdata", "uk.RData")
-force_ref <- Sys.getenv("GRDD_FORCE_REFIT_UK", "") == "1"
+uk_rda <- file.path("output", "rdata", "uk.RData")
 
-if (!force_ref && file.exists(uk_rda)) {
+if (file.exists(uk_rda)) {
   message("Loading cached objects from ", uk_rda)
   load(uk_rda)
 }
-if (!exists("resuk") || force_ref) {
+if (!exists("resuk")) {
   message("Fitting GRDD (composition) …")
   resuk <- grdd(y = Yuk, x = Ruk, cutoff = 0, optns = list(type = "composition"))
 }
