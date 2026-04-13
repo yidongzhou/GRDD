@@ -20,7 +20,6 @@ source(file.path("R", "lfr_spd.R"))
 source(file.path("R", "lfr_euc.R"))
 source(file.path("R", "lcm.R"))
 source(file.path("R", "grdd.R"))
-source(file.path("R", "grdd_inference.R"))
 
 library(haven)
 library(ggplot2)
@@ -133,12 +132,6 @@ resmt_nonhighway <- grdd(
 
 distance(resmt_highway$tau$right, resmt_highway$tau$left, optns = list(type = "function", supp = 1:24 - 0.5))
 distance(resmt_nonhighway$tau$right, resmt_nonhighway$tau$left, optns = list(type = "function", supp = 1:24 - 0.5))
-
-set.seed(1)
-pv_highway <- grdd_inference(resmt_highway, alpha = 0.05, B = 1000, seed = 1)
-pv_nonhighway <- grdd_inference(resmt_nonhighway, alpha = 0.05, B = 1000, seed = 1)
-print(pv_highway)
-print(pv_nonhighway)
 
 res_highway_before <- lfr_fun(
   y = Ymt_highway[Rmt_highway < 0],
