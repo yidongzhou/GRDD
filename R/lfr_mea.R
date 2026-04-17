@@ -15,7 +15,7 @@
 #' @details
 #' Available options in \code{optns} include:
 #' \describe{
-#'   \item{\code{bw}}{Bandwidth for local regression. If omitted, it is selected via cross-validation.}
+#'   \item{\code{bw}}{Bandwidth for local regression (required; selected in \code{grdd()} in our workflow).}
 #'   \item{\code{kernel}}{Kernel function to use. Available options are \code{"gaussian"} (default), 
 #'     \code{"triangular"}, \code{"uniform"}, \code{"epanechnikov"}, \code{"gausvar"}, and \code{"quartic"}.}
 #' }
@@ -91,24 +91,6 @@ lfr_mea <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   if (is.null(optns$kernel)) {
     optns$kernel <- "gaussian"
   }
-  # if (is.null(optns$bw)) {
-  #   optns$bw <- bwCV_mea(y = y, x = x, xOut = xOut, optns = optns)
-  # } else {
-  #   if (length(optns$bw) != p) {
-  #     stop("dimension of bandwidth does not agree with x")
-  #   }
-  #   # Check if any bandwidth is too small
-  #   isSmallBw <- logical(p)
-  #   for (j in 1:p) {
-  #     isSmallBw[j] <- optns$bw[j] < max(diff(sort(x[, j])))
-  #   }
-  #   # Reset bandwidth if needed using cross validation
-  #   if (all(isSmallBw) && optns$kernel %in% c("rect", "quar", "epan")) {
-  #     warning("optns$bw was set too small and is reset to be chosen by cross-validation")
-  #     optns$bw <- bwCV_mea(y = y, x = x, xOut = xOut, optns = optns)
-  #   }
-  # }
-  
   # initialization of OSQP solver
   A <- cbind(diag(M), rep(0, M)) + cbind(rep(0, M), -diag(M))
   if (!is.null(optns$upper) &
@@ -138,7 +120,7 @@ lfr_mea <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
                       osqp::osqpSettings(max_iter = 1e05, eps_abs = 1e-05, eps_rel = 1e-05, verbose = FALSE))
   
   yOut <- lapply(seq_len(nOut), function(i) {
-    w <- local_linear_weights(x, xOut[i, ], optns$bw, optns$kernel)
+    w <- ll_weights(x, xOut[i, ], optns$bw, optns$kernel)
     yOuti <- apply(y, 2, weighted.mean, w)
     if (any(w < 0)) {
       model$Update(q = -yOuti)
@@ -155,43 +137,3 @@ lfr_mea <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   res <- list(predict = yOut, xOut = xOut, y = y, x = x, optns = optns)
   return(res)
 }
-
-# # bandwidth selection via cross validation
-# bwCV_mea <- function(y, x, xOut, optns) {
-#   n <- nrow(x)
-#   p <- ncol(x)
-#   
-#   # k-fold
-#   objFctn <- function(h) {
-#     numFolds <- ifelse(n > 30, 10, n)# leave-one-out or 10-fold cross-validation
-#     folds <- sample(c(rep.int(1:numFolds, n%/%numFolds), seq_len(n%%numFolds)))
-#     
-#     cv <- 0
-#     for (foldidx in seq_len(numFolds)) {
-#       # nn by M
-#       testidx <- which(folds == foldidx)
-#       for (j in testidx) {
-#         yOutj <- lfr_mea0(x[-testidx, , drop = FALSE], x[j, ], y[-testidx, , drop = FALSE], h, optns$kernel)
-#         cv <- cv + sqrt(sum((y[j, ] - yOutj)^2))
-#       }
-#     }
-#     cv
-#   }
-#   
-#   if (p == 1) {
-#     aux <- setBwRange(x = x[, 1], xOut = xOut[, 1], kernel_type = optns$kernel)
-#     bwRange <- matrix(c(aux$min, aux$max), nrow = 2, ncol = 1)
-#   } else {
-#     aux <- setBwRange(x = x[, 1], xOut = xOut[, 1], kernel_type = optns$kernel)
-#     aux2 <- setBwRange(x = x[, 2], xOut = xOut[, 2], kernel_type = optns$kernel)
-#     bwRange <- as.matrix(cbind(c(aux$min, aux$max), c(aux2$min, aux2$max)))
-#   }
-#   
-#   if (p == 1) {
-#     res <- optimize(f = objFctn, interval = bwRange[, 1])$minimum
-#   } else {
-#     res <- optim(par = colMeans(bwRange), fn = objFctn, lower = bwRange[1, ], 
-#                  upper = bwRange[2, ], method = "L-BFGS-B")$par
-#   }
-#   res
-# }

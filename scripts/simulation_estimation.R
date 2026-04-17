@@ -10,7 +10,7 @@
 # Usage (from repository root):  Rscript scripts/simulation_estimation.R
 
 source(file.path("R", "kerFctn.R"))
-source(file.path("R", "local_linear.R"))
+source(file.path("R", "ll_weights.R"))
 source(file.path("R", "lfr_com.R"))
 source(file.path("R", "lfr_fun.R"))
 source(file.path("R", "lfr_mea.R"))
@@ -146,7 +146,7 @@ clusterExport(
     "P_BLOCK_SBM", "EPS_UNIF_MAX",
     "generate_network", "tau_ij", "run_single_rep",
     "grdd", "distance", "gtm", "bw_select", "lfr", "lfr_net",
-    "kerFctn", "local_linear_weights"
+    "kerFctn", "ll_weights"
   )
 )
 

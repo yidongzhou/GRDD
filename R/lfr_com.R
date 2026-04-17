@@ -14,7 +14,7 @@
 #' @details
 #' The following options may be specified in \code{optns}:
 #' \describe{
-#'   \item{\code{bw}}{Bandwidth for local regression. If not provided, it is selected via cross-validation.}
+#'   \item{\code{bw}}{Bandwidth for local regression (required; selected in \code{grdd()} in our workflow).}
 #'   \item{\code{kernel}}{Kernel function to use. Available options include \code{"gaussian"} (default), 
 #'     \code{"triangular"}, \code{"uniform"}, \code{"epanechnikov"}, \code{"gausvar"}, and \code{"quartic"}.}
 #' }
@@ -95,24 +95,6 @@ lfr_com <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
     warning("Each row of y has been standardized to enforce sum equal to 1")
   }
   y <- sqrt(y)# from simplex to sphere
-  # if (is.null(optns$bw)) {
-  #   optns$bw <- bwCV_com(y = y, x = x, xOut = xOut, optns = optns)
-  # } else {
-  #   if (length(optns$bw) != p) {
-  #     stop("dimension of bandwidth does not agree with x")
-  #   }
-  #   # Check if any bandwidth is too small
-  #   isSmallBw <- logical(p)
-  #   for (j in 1:p) {
-  #     isSmallBw[j] <- optns$bw[j] < max(diff(sort(x[, j])))
-  #   }
-  #   # Reset bandwidth if needed using cross validation
-  #   if (all(isSmallBw) && optns$kernel %in% c("rect", "quar", "epan")) {
-  #     warning("optns$bw was set too small and is reset to be chosen by cross-validation")
-  #     optns$bw <- bwCV_com(y = y, x = x, xOut = xOut, optns = optns)
-  #   }
-  # }
-  
   yOut <- lapply(1:nOut, function(i) {
     yOuti <- lfr_com0(x, xOut[i, ], y, optns$bw, optns$kernel)
     yOuti <- yOuti^2# from sphere to simplex
@@ -123,50 +105,10 @@ lfr_com <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   return(res)
 }
 
-# # bandwidth selection via cross validation
-# bwCV_com <- function(y, x, xOut, optns) {
-#   n <- nrow(x)
-#   p <- ncol(x)
-#   
-#   # k-fold
-#   objFctn <- function(h) {
-#     numFolds <- ifelse(n > 30, 10, n)# leave-one-out or 10-fold cross-validation
-#     folds <- sample(c(rep.int(1:numFolds, n%/%numFolds), seq_len(n%%numFolds)))
-#     
-#     cv <- 0
-#     for (foldidx in seq_len(numFolds)) {
-#       # nn by M
-#       testidx <- which(folds == foldidx)
-#       for (j in testidx) {
-#         yOutj <- lfr_com0(x[-testidx, , drop = FALSE], x[j, ], y[-testidx, , drop = FALSE], h, optns$kernel)
-#         cv <- cv + SpheGeoDist(y[j, ], yOutj)^2
-#       }
-#     }
-#     cv
-#   }
-#   
-#   if (p == 1) {
-#     aux <- setBwRange(x = x[, 1], xOut = xOut[, 1], kernel_type = optns$kernel)
-#     bwRange <- matrix(c(aux$min, aux$max), nrow = 2, ncol = 1)
-#   } else {
-#     aux <- setBwRange(x = x[, 1], xOut = xOut[, 1], kernel_type = optns$kernel)
-#     aux2 <- setBwRange(x = x[, 2], xOut = xOut[, 2], kernel_type = optns$kernel)
-#     bwRange <- as.matrix(cbind(c(aux$min, aux$max), c(aux2$min, aux2$max)))
-#   }
-#   
-#   if (p == 1) {
-#     res <- optimize(f = objFctn, interval = bwRange[, 1])$minimum
-#   } else {
-#     res <- optim(par = colMeans(bwRange), fn = objFctn, lower = bwRange[1, ], 
-#                  upper = bwRange[2, ], method = "L-BFGS-B")$par
-#   }
-#   res
-# }
-
 # a: output predictor level
 lfr_com0 <- function(x, a, y, bw, kernel) {
   n <- nrow(x)
-  w <- local_linear_weights(x, a, bw, kernel, ridge = TRUE)
+  w <- ll_weights(x, a, bw, kernel, ridge = TRUE)
   y0 <- apply(y, 2, weighted.mean, w)# initial guess
   y0 <- y0 / l2norm(y0)
   

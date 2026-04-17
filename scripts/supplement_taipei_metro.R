@@ -11,7 +11,7 @@
 # Usage (from repository root):  Rscript scripts/supplement_taipei_metro.R
 
 source(file.path("R", "kerFctn.R"))
-source(file.path("R", "local_linear.R"))
+source(file.path("R", "ll_weights.R"))
 source(file.path("R", "lfr_com.R"))
 source(file.path("R", "lfr_fun.R"))
 source(file.path("R", "lfr_mea.R"))

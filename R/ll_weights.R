@@ -17,7 +17,7 @@
 #'   moment of \eqn{x - a} so the local-linear system is never singular.
 #'
 #' @return Numeric vector of length \eqn{n} (unnormalized weights).
-local_linear_weights <- function(x, a, bw, kernel, ridge = TRUE) {
+ll_weights <- function(x, a, bw, kernel, ridge = TRUE) {
   if (is.data.frame(x)) {
     x <- as.matrix(x)
   } else if (!is.matrix(x)) {

@@ -8,7 +8,7 @@
 # Usage (from repository root):  source("scripts/application_uk_election.R")
 
 source(file.path("R", "kerFctn.R"))
-source(file.path("R", "local_linear.R"))
+source(file.path("R", "ll_weights.R"))
 source(file.path("R", "lfr_com.R"))
 source(file.path("R", "lfr_fun.R"))
 source(file.path("R", "lfr_mea.R"))

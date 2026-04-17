@@ -13,18 +13,13 @@
 # =============================================================================
 
 #' Embedding \eqn{y \mapsto \Psi(y)}.
-#' For compositional data we use the Riemannian logarithm map at a 
-#' fixed base point. The base point is chosen automatically as the sample 
-#' Fréchet mean on the sphere (via \code{manifold::frechetMean}) when a list 
-#' of points is supplied. For a single point the base is taken to be the point 
-#' itself (yielding the zero tangent vector).
+#' For compositional data we use the Riemannian logarithm map at a fixed base
+#' point on the sphere (square-root map). In the GRDD inference workflow the
+#' base is taken to be the left cutoff estimate \code{fit$tau$left}.
 #' 
 #' @param obj A list of outcomes or one outcome (e.g. \code{nu0} from \code{fit$tau}).
 #' @param type Outcome type string (same as \code{optns$type} from \code{grdd()}).
-#' @param base Optional base point for the log map when \code{type == "composition"}.
-#'   If \code{NULL} and \code{obj} is a list, the base is set to the sample Fréchet mean
-#'   of the square-root transformed compositions. If \code{NULL} and \code{obj} is a
-#'   single composition, the base defaults to the point itself.
+#' @param base Base point for the log map when \code{type == "composition"} (required).
 #' @return For list input, the list of embedded tangent vectors; 
 #'   for a single input, the embedded tangent vector (in \(\mathbb{R}^{d-1}\)).
 logmap_sphere <- function(z, p, tol = 1e-10) {
@@ -66,32 +61,26 @@ embed_object <- function(obj, type, base = NULL) {
       TRUE
     }
     if (is.list(obj)) {
+      if (is.null(base)) {
+        stop("For type = \"composition\", base must be provided.", call. = FALSE)
+      }
       # obj is a list of simplex compositions; map to the sphere via square-root transform
       if (!all(vapply(obj, comp_ok, logical(1)))) {
         stop("For type = \"composition\", each element of obj must be a valid composition (nonnegative, finite, sum to 1).",
              call. = FALSE)
       }
       obj_sphere <- lapply(obj, sqrt)
-      if (is.null(base)) {
-        base <- c(manifold::frechetMean(
-          mfd  = structure(1, class = 'Sphere'),
-          X    = matrix(unlist(obj_sphere), ncol = length(obj_sphere)),
-          maxit = 1e04
-        ))
-      }
       emb <- lapply(obj_sphere, function(y) logmap_sphere(y, base))
-      attr(emb, "base") <- base
       return(emb)
     } else {
-      # single point: use itself as base (yields the zero tangent vector)
+      if (is.null(base)) {
+        stop("For type = \"composition\", base must be provided.", call. = FALSE)
+      }
       if (!comp_ok(obj)) {
         stop("For type = \"composition\", obj must be a valid composition (nonnegative, finite, sum to 1).",
              call. = FALSE)
       }
       obj_sphere <- sqrt(obj)
-      if (is.null(base)) {
-        base <- obj_sphere
-      }
       return(logmap_sphere(obj_sphere, base))
     }
   }
@@ -221,10 +210,13 @@ grdd_inference <- function(fit, alpha = 0.05, B = 1000L, seed = NULL) {
   if (optns$type == "measure") {
     y <- harmonize_measure(y)
   }
-  y <- embed_object(y, optns$type)
   base <- NULL
   if (optns$type == "composition") {
-    base <- attr(y, "base", exact = TRUE)
+    # Use the left cutoff estimate as the fixed base point for the log map.
+    base <- sqrt(as.numeric(nu0))
+    y <- embed_object(y, optns$type, base = base)
+  } else {
+    y <- embed_object(y, optns$type)
   }
   Psi <- do.call(rbind, lapply(y, function(yi) as.numeric(yi)))
   nu0_psi <- embed_object(nu0, optns$type, base = base)
@@ -235,7 +227,7 @@ grdd_inference <- function(fit, alpha = 0.05, B = 1000L, seed = NULL) {
   d_hat <- sqrt(d_hat_sq)
 
   # Normalize side-specific local linear weights before bootstrap.
-  w_left <- local_linear_weights(x[idx0], cutoff, bw, kernel)
+  w_left <- ll_weights(x[idx0], cutoff, bw, kernel)
   sw_left <- sum(w_left)
   if (!is.finite(sw_left) || sw_left <= 0) {
     stop("Local linear weights sum to a non-positive value on the left side.", call. = FALSE)
@@ -243,7 +235,7 @@ grdd_inference <- function(fit, alpha = 0.05, B = 1000L, seed = NULL) {
   s0 <- rep(0, n)
   s0[idx0] <- n0 * w_left / sw_left
 
-  w_right <- local_linear_weights(x[idx1], cutoff, bw, kernel)
+  w_right <- ll_weights(x[idx1], cutoff, bw, kernel)
   sw_right <- sum(w_right)
   if (!is.finite(sw_right) || sw_right <= 0) {
     stop("Local linear weights sum to a non-positive value on the right side.", call. = FALSE)

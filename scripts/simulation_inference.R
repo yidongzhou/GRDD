@@ -10,7 +10,7 @@
 # Usage (from repository root):  Rscript scripts/simulation_inference.R
 
 source(file.path("R", "kerFctn.R"))
-source(file.path("R", "local_linear.R"))
+source(file.path("R", "ll_weights.R"))
 source(file.path("R", "lfr_com.R"))
 source(file.path("R", "lfr_fun.R"))
 source(file.path("R", "lfr_mea.R"))
@@ -109,7 +109,7 @@ clusterExport(
     "tau_ij", "generate_network", "run_inference_rep",
     "alpha", "B_boot", "base_seed", "n_reps",
     "grdd", "distance", "gtm", "bw_select", "lfr", "lfr_net", "kerFctn",
-    "local_linear_weights",
+    "ll_weights",
     "grdd_inference", "bootstrap_grdd_inference", "embed_object", "hilbert_inner"
   ),
   envir = environment()
