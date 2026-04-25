@@ -32,12 +32,12 @@
 #' @examples
 #' \dontrun{
 #' # Example:
-#' # result <- lfr_mea(y, x, xOut, optns = list(bw = 0.5, kernel = "gaussian"))
+#' # result <- lfr_upm(y, x, xOut, optns = list(bw = 0.5, kernel = "gaussian"))
 #' }
 #'
 #' @export
 
-lfr_mea <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
+lfr_upm <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   if (is.null(y) || is.null(x)) {
     stop("requires the input of both y and x")
   }

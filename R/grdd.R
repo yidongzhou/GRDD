@@ -136,7 +136,7 @@ lfr <- function(y, x, xOut, optns) {
     optns$type,
     "composition" = lfr_com,
     "function" = lfr_fun,
-    "measure" = lfr_mea,
+    "measure" = lfr_upm,
     "network" = lfr_net,
     "spd" = lfr_spd,
     "euclidean" = lfr_euc,
