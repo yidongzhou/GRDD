@@ -50,7 +50,7 @@ lfr_com <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
     stop('all elements of y must have the same length')
   }
   ctg <- names(y[[1]])
-  y <- matrix(unlist(y), nrow = length(y), byrow = TRUE)
+  yM <- matrix(unlist(y), nrow = length(y), byrow = TRUE)
   if (!is.matrix(x)) {
     if (is.data.frame(x) | is.vector(x)) {
       x <- as.matrix(x)
@@ -63,7 +63,7 @@ lfr_com <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   if (p > 2) {
     stop("local method is designed to work in low dimensional case (p is either 1 or 2)")
   }
-  if (nrow(y) != n) {
+  if (nrow(yM) != n) {
     stop("the number of rows in x must be the same as the number of rows in y")
   }
   if (!is.null(xOut)) {
@@ -90,13 +90,13 @@ lfr_com <- function(y = NULL, x = NULL, xOut = NULL, optns = list()){
   if (is.null(optns$kernel)) {
     optns$kernel <- "gaussian"
   }
-  if (any(abs(rowSums(y) - 1) > 1.5e-8)){
-    y = y / rowSums(y)
+  if (any(abs(rowSums(yM) - 1) > 1.5e-8)){
+    yM <- yM / rowSums(yM)
     warning("Each row of y has been standardized to enforce sum equal to 1")
   }
-  y <- sqrt(y)# from simplex to sphere
+  yM <- sqrt(yM)# from simplex to sphere
   yOut <- lapply(1:nOut, function(i) {
-    yOuti <- lfr_com0(x, xOut[i, ], y, optns$bw, optns$kernel)
+    yOuti <- lfr_com0(x, xOut[i, ], yM, optns$bw, optns$kernel)
     yOuti <- yOuti^2# from sphere to simplex
     names(yOuti) <- ctg
     yOuti
@@ -158,7 +158,6 @@ lfr_com0 <- function(x, a, y, bw, kernel) {
 #'y2 <- y2 / sqrt(sum(y2^2))
 #'dist <- SpheGeoDist(y1,y2)
 #'@export
-
 SpheGeoDist <- function(y1, y2) {
   if (length(y1) != length(y2)) {
     stop("y1 and y2 should be of the same length")
